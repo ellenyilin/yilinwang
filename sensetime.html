@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SenseTime AI Chatbox — Yilin Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* ── warm parchment palette — distinct from all previous pages ── */
+      --bg:      #F5F2ED;   /* warm parchment */
+      --bg-2:    #EDE8E1;
+      --border:  #C8C0B4;
+      --ink-1:   #1A1814;
+      --ink-2:   #48403A;
+      --ink-3:   #8A8278;
+      --accent:  #1B4D3E;   /* deep forest green */
+      --accent-l:#2A7255;   /* lighter green for hovers */
+      --gold:    #B8860B;   /* dark gold */
+         /* dark green footer */
+      --serif:  'DM Serif Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { background: transparent; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img  { display: block; max-width: 100%; height: auto; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.07); white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; color: var(--ink-2); text-decoration: none;
+                  padding: 5px 14px; transition: background .15s;
+                  display: flex; align-items: center; gap: 6px; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+
+    /* ── PAGE ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 0 64px; }
+
+    /* ── HEADER ── */
+    .proj-eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em;
+      display: flex; align-items: center; gap: 12px;
+      padding-top: 120px; margin-bottom: 24px;
+    }
+    .proj-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .header-cols {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--ink-1);
+    }
+    .h-left { padding: 36px 56px 36px 0; border-right: 1px solid var(--border); }
+    .h-right { padding: 36px 0 36px 56px; display: flex; flex-direction: column; gap: 28px; }
+
+    .proj-title {
+      font-family: var(--serif); font-size: clamp(44px, 5vw, 72px);
+      line-height: .96; letter-spacing: -.01em; margin-bottom: 20px;
+    }
+    .proj-title em { font-style: italic; color: var(--accent); }
+    .proj-desc { font-size: 14px; line-height: 1.85; color: var(--ink-2); max-width: 44ch; }
+    .proj-desc strong { color: var(--ink-1); font-weight: 600; }
+
+    /* Stats */
+    .stat-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .stat-item { padding-right: 24px; }
+    .stat-item + .stat-item { padding-left: 24px; padding-right: 0; border-left: 1px solid var(--border); }
+    .stat-n { font-family: var(--serif); font-size: 52px; line-height: 1; color: var(--ink-1); }
+    .stat-n em { font-style: normal; color: var(--accent); }
+    .stat-l { font-size: 11px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
+
+    /* Meta */
+    .meta-block { display: flex; flex-direction: column; gap: 0; }
+    .meta-row { padding: 12px 0; border-top: 1px solid var(--border); }
+    .ml { font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+          text-transform: uppercase; letter-spacing: .12em; margin-bottom: 3px; }
+    .mv { font-size: 13px; color: var(--ink-1); line-height: 1.5; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 52px 0; border-top: 1px solid var(--border); }
+
+    .sec-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .16em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .sec-h { font-family: var(--serif); font-size: clamp(26px, 2.8vw, 36px);
+             line-height: 1.08; margin-bottom: 14px; }
+    .sec-h em { font-style: italic; color: var(--accent); }
+
+    .lead { font-size: 14px; line-height: 1.85; color: var(--ink-2); max-width: 58ch; margin-bottom: 24px; }
+    .lead strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── GRIDS ── */
+    .cols-6040 { display: grid; grid-template-columns: 3fr 2fr; gap: 56px; align-items: start; }
+    .cols-5050 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+
+    /* ── HYPOTHESIS BOX ── */
+    .hypothesis {
+      border-left: 3px solid var(--accent);
+      padding: 20px 24px; margin: 0 0 24px;
+      background: rgba(27,77,62,.05);
+    }
+    .hyp-label { font-family: var(--mono); font-size: 9px; color: var(--accent);
+                 text-transform: uppercase; letter-spacing: .14em; margin-bottom: 8px; }
+    .hyp-text { font-family: var(--serif); font-size: 18px; line-height: 1.4;
+                color: var(--ink-1); font-style: italic; }
+
+    /* ── CHALLENGE / AB TABLE ── */
+    .ch-table { width: 100%; border-collapse: collapse; }
+    .ch-table tr { border-bottom: 1px solid var(--border); }
+    .ch-table tr:first-child { border-top: 1px solid var(--border); }
+    .ch-table td { padding: 13px 0; vertical-align: top; }
+    .ch-n { width: 36px; font-family: var(--mono); font-size: 9px;
+            color: var(--accent); font-weight: 700; padding-top: 2px; }
+    .ch-t { font-size: 13px; font-weight: 600; color: var(--ink-1);
+            width: 160px; padding-right: 28px; }
+    .ch-d { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+    /* ── FUNNEL VIS ── */
+    .funnel-vis { display: flex; flex-direction: column; gap: 0; margin: 0; }
+    .funnel-step-row {
+      display: grid; grid-template-columns: 130px 1fr 80px;
+      align-items: center; gap: 14px; padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .funnel-step-row:first-child { border-top: 1px solid var(--border); }
+    .fs-label { font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+                text-transform: uppercase; letter-spacing: .1em; }
+    .fs-bar-wrap { height: 6px; background: var(--bg-2); position: relative; overflow: hidden; }
+    .fs-bar { height: 6px; background: var(--accent); transition: width .3s; }
+    .fs-val { font-family: var(--mono); font-size: 11px; font-weight: 600;
+              color: var(--ink-1); text-align: right; }
+    .fs-val em { font-style: normal; color: var(--accent); }
+
+    /* ── RESULT CARDS ── */
+    .result-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin: 28px 0; }
+    .rc { padding: 22px 20px; background: var(--bg-2); border: 1px solid var(--border); }
+    .rc .rl { font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+              text-transform: uppercase; letter-spacing: .12em; margin-bottom: 6px; }
+    .rc .rn { font-family: var(--serif); font-size: 42px; line-height: 1;
+              color: var(--ink-1); margin-bottom: 6px; }
+    .rc .rn em { font-style: normal; color: var(--accent); }
+    .rc .rd { font-size: 12px; color: var(--ink-2); line-height: 1.55; }
+
+    /* ── IMPL TABLE ── */
+    .impl-table { width: 100%; border-collapse: collapse; }
+    .impl-table tr { border-bottom: 1px solid var(--border); }
+    .impl-table tr:first-child { border-top: 1px solid var(--border); }
+    .impl-table td { padding: 16px 0; vertical-align: top; }
+    .im-n { width: 36px; font-family: var(--serif); font-size: 20px; line-height: 1;
+            color: var(--border); padding-right: 12px; }
+    .im-t { font-size: 13px; font-weight: 600; color: var(--ink-1);
+            width: 200px; padding-right: 28px; }
+    .im-d { font-size: 13px; line-height: 1.72; color: var(--ink-2); }
+    .im-d strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout { border-top: 2px solid var(--accent); padding: 18px 0 0; margin: 32px 0 0; }
+    .callout .cl { font-family: var(--mono); font-size: 9px; color: var(--accent);
+                   text-transform: uppercase; letter-spacing: .14em; margin-bottom: 8px; }
+    .callout p { font-size: 14px; line-height: 1.75; color: var(--ink-2); max-width: 64ch; }
+    .callout p strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── KP LIST ── */
+    .kp { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+    .kp li { display: flex; gap: 10px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+    .kp li::before { content: '→'; color: var(--accent); font-family: var(--mono);
+                     font-weight: 700; flex-shrink: 0; }
+    .kp strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── CONCLUSION ── */
+    .conclusion { background: #0E2E20; padding: 64px; }
+    .conclusion-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+    }
+    .c-eyebrow { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.35);
+                 text-transform: uppercase; letter-spacing: .14em; margin-bottom: 14px; }
+    .conclusion h2 { font-family: var(--serif); font-size: 32px; color: #fff;
+                     line-height: 1.1; margin-bottom: 16px; }
+    .conclusion h2 em { font-style: italic; color: #A8D5B5; }
+    .conclusion p { font-size: 13px; line-height: 1.85; color: rgba(255,255,255,.6); }
+    .conclusion p strong { color: rgba(255,255,255,.9); font-weight: 600; }
+    .outcome-list { border-top: 1px solid rgba(255,255,255,.15); }
+    .oi { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.1);
+          display: grid; grid-template-columns: 1fr 1.6fr; gap: 16px; background: transparent; }
+    .oi .ot { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.9); }
+    .oi .od { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,.5); }
+
+    /* ── PROJ NAV ── */
+    .proj-nav {
+      max-width: 1100px; margin: 0 auto; padding: 36px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(255,255,255,.12); background: #0E2E20;
+    }
+    .proj-nav a { text-decoration: none; display: flex; align-items: center;
+                  gap: 12px; background: transparent; }
+    .pn-dir { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.3);
+              text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 3px; }
+    .pn-title { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.85); }
+    .proj-nav a:hover .pn-title { color: #A8D5B5; }
+    .nav-icon { color: rgba(255,255,255,.3); transition: color .15s; }
+    .proj-nav a:hover .nav-icon { color: #A8D5B5; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .page { padding: 0 28px; }
+      .header-cols { grid-template-columns: 1fr; }
+      .h-left { border-right: none; border-bottom: 1px solid var(--border); padding: 28px 0; }
+      .h-right { padding: 24px 0 0; }
+      .cols-6040, .cols-5050 { grid-template-columns: 1fr; }
+      .result-row { grid-template-columns: 1fr; }
+      .conclusion-inner { grid-template-columns: 1fr; }
+      .conclusion, .proj-nav { padding: 36px 28px; }
+      .proj-nav { flex-direction: column; gap: 20px; align-items: flex-start; }
+      .oi { grid-template-columns: 1fr; gap: 4px; }
+      .im-t { width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">YW</a>
+  <a href="cartabio.html" class="pill">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    Prev
+  </a>
+  <a href="index.html#work" class="pill">All Projects</a>
+  <a href="index.html" class="pill">Home</a>
+</nav>
+
+<!-- ═══ HEADER ═══ -->
+<div class="page">
+  <div class="proj-eyebrow">05 · Evaluate / A/B Testing &amp; Product Experiment</div>
+
+  <div class="header-cols">
+    <div class="h-left">
+      <h1 class="proj-title">SenseTime<br><em>AI Chatbox</em></h1>
+      <p class="proj-desc">
+        Proposed and validated a new interaction pattern in a conversational AI shopping flow — using progressive disclosure to <strong>reduce early exits</strong> and increase first-step retention by 32%.
+      </p>
+    </div>
+    <div class="h-right">
+      <div class="stat-pair">
+        <div class="stat-item">
+          <div class="stat-n"><em>↑32%</em></div>
+          <div class="stat-l">First-step retention (primary metric)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-n">A/B</div>
+          <div class="stat-l">Validated via controlled experiment</div>
+        </div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-row">
+          <div class="ml">Role &amp; Context</div>
+          <div class="mv">AI Product Intern · SenseTime · Dec 2023 – Mar 2024 · Shenzhen</div>
+        </div>
+        <div class="meta-row">
+          <div class="ml">Method</div>
+          <div class="mv">A/B Testing · Progressive Disclosure · Funnel Analysis</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="page">
+
+  <!-- A. The Problem -->
+  <section class="section">
+    <div class="sec-label">A &nbsp; The Problem</div>
+
+    <div class="cols-6040">
+      <div>
+        <h2 class="sec-h">Users were <em>dropping off</em><br>before exploring</h2>
+        <p class="lead">
+          In SenseTime's AI-driven recommendation dialogue, product images were automatically surfaced early in the conversation. While informative, this design often <strong>disrupted the exploration flow</strong> — users would see product cards before they'd framed their intent, leading to immediate drop-off.
+        </p>
+
+        <div class="hypothesis">
+          <div class="hyp-label">Hypothesis</div>
+          <div class="hyp-text">"Delaying product exposure through progressive disclosure will increase the rate of users who make an initial interaction rather than exiting immediately."</div>
+        </div>
+
+        <p style="font-size:13px;line-height:1.75;color:var(--ink-2);margin-top:0;">
+          The core insight: showing product cards too early <strong>short-circuits curiosity</strong>. Users who haven't formed a question yet don't benefit from seeing answers.
+        </p>
+      </div>
+
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px;">Root Cause Analysis</div>
+        <table class="ch-table">
+          <tr>
+            <td class="ch-n">01</td>
+            <td class="ch-t">Premature product exposure</td>
+            <td class="ch-d">Auto-surfaced product cards interrupted intent formation before users could articulate what they wanted</td>
+          </tr>
+          <tr>
+            <td class="ch-n">02</td>
+            <td class="ch-t">No sense of agency</td>
+            <td class="ch-d">Users felt the conversation was "decided" before they participated — no exploration hook</td>
+          </tr>
+          <tr>
+            <td class="ch-n">03</td>
+            <td class="ch-t">Answers before questions</td>
+            <td class="ch-d">In any dialogue, showing answers before a question is formed creates friction, not value</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- B. The Experiment -->
+  <section class="section">
+    <div class="sec-label">B &nbsp; Experiment Design</div>
+
+    <div class="cols-5050">
+      <div>
+        <h2 class="sec-h">Proposed solution &amp;<br><em>test structure</em></h2>
+        <p class="lead">
+          Instead of auto-surfacing product cards, the variant required users to take one additional interaction step before product content was revealed. Minimal intervention — isolated a single UI variable.
+        </p>
+        <ul class="kp">
+          <li><strong>Control:</strong> Product images auto-appear in first AI response</li>
+          <li><strong>Variant:</strong> Products revealed only after user's first message</li>
+          <li><strong>Primary metric:</strong> First-step retention — % who interact vs. immediately exit</li>
+          <li><strong>Secondary:</strong> Depth of exploration, bounce-at-first-message rate</li>
+        </ul>
+      </div>
+
+      <div>
+        <div style="font-family:var(--mono);font-size:9px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px;">Funnel — Variant vs. Control</div>
+        <div class="funnel-vis">
+          <div class="funnel-step-row">
+            <div class="fs-label">Session Start</div>
+            <div class="fs-bar-wrap"><div class="fs-bar" style="width:100%"></div></div>
+            <div class="fs-val">100%</div>
+          </div>
+          <div class="funnel-step-row">
+            <div class="fs-label">First Message</div>
+            <div class="fs-bar-wrap"><div class="fs-bar" style="width:76%"></div></div>
+            <div class="fs-val"><em>↑32%</em></div>
+          </div>
+          <div class="funnel-step-row">
+            <div class="fs-label">Exploration</div>
+            <div class="fs-bar-wrap"><div class="fs-bar" style="width:58%"></div></div>
+            <div class="fs-val">Deeper</div>
+          </div>
+          <div class="funnel-step-row">
+            <div class="fs-label">Product View</div>
+            <div class="fs-bar-wrap"><div class="fs-bar" style="width:44%"></div></div>
+            <div class="fs-val">Intentional</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C. Results -->
+  <section class="section">
+    <div class="sec-label">C &nbsp; Key Results</div>
+
+    <div class="result-row">
+      <div class="rc">
+        <div class="rl">Primary Metric</div>
+        <div class="rn"><em>+32%</em></div>
+        <div class="rd">First-step retention — users who interacted vs. exited on first message</div>
+      </div>
+      <div class="rc">
+        <div class="rl">Exploration Depth</div>
+        <div class="rn" style="font-size:28px;line-height:1.2;">Longer<br>sessions</div>
+        <div class="rd">Users engaged longer before product content was surfaced — more intentional browsing</div>
+      </div>
+      <div class="rc">
+        <div class="rl">Early Funnel</div>
+        <div class="rn" style="font-size:28px;line-height:1.2;">↓ Bounce<br>rate</div>
+        <div class="rd">Reduced "bounce at first message" — early funnel health substantially improved</div>
+      </div>
+    </div>
+
+    <table class="impl-table">
+      <tr>
+        <td class="im-n">1</td>
+        <td class="im-t">Problem framing</td>
+        <td class="im-d">Identified the friction point by tracing <strong>where users dropped off</strong> in the funnel — early exit at first AI response, before any interaction had occurred.</td>
+      </tr>
+      <tr>
+        <td class="im-n">2</td>
+        <td class="im-t">Hypothesis design</td>
+        <td class="im-d">Framed the test around a behavioral insight: <strong>curiosity precedes intent</strong>. Users need to form a question before an answer is useful — delaying exposure respects that sequence.</td>
+      </tr>
+      <tr>
+        <td class="im-n">3</td>
+        <td class="im-t">Metric selection</td>
+        <td class="im-d">Primary: first-step retention. Secondary: exploration depth and bounce rate. Avoided vanity metrics — focused on <strong>early funnel behavior change</strong>.</td>
+      </tr>
+      <tr>
+        <td class="im-n">4</td>
+        <td class="im-t">Minimal intervention</td>
+        <td class="im-d">No change to copy, AI logic, or product ranking — delay product card rendering by one interaction step. <strong>Isolated the UI variable</strong> cleanly for attribution.</td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <div class="cl">PM Takeaway</div>
+      <p>This experiment demonstrates the full cycle: <strong>observe a problem → form a falsifiable hypothesis → design a minimal intervention → measure against a primary metric</strong>. The 32% lift came not from adding features, but from removing premature friction.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ CONCLUSION ═══ -->
+<div class="conclusion">
+  <div class="conclusion-inner">
+    <div>
+      <div class="c-eyebrow">Project Outcome</div>
+      <h2>Less is more,<br><em>earlier</em></h2>
+      <p>
+        SenseTime AI Chatbox is the "Evaluate" phase — using a <strong>controlled A/B experiment to validate a behavioral hypothesis</strong> about user exploration patterns in conversational AI.
+        <br><br>
+        The key insight generalizes beyond e-commerce: in any AI dialogue, showing answers before users have formed questions creates friction, not value.
+      </p>
+    </div>
+    <div>
+      <div class="outcome-list">
+        <div class="oi">
+          <div class="ot">+32% first-step retention</div>
+          <div class="od">Primary metric validated via A/B test — meaningful early-funnel improvement</div>
+        </div>
+        <div class="oi">
+          <div class="ot">Hypothesis confirmed</div>
+          <div class="od">Progressive disclosure increased engagement before product exposure</div>
+        </div>
+        <div class="oi">
+          <div class="ot">Bounce reduced</div>
+          <div class="od">"Bounce at first message" rate decreased — early funnel significantly strengthened</div>
+        </div>
+        <div class="oi">
+          <div class="ot">Reusable pattern</div>
+          <div class="od">Progressive disclosure principle applicable to any conversational AI product</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT NAV -->
+<div class="proj-nav">
+  <a href="cartabio.html">
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    <div>
+      <span class="pn-dir">Previous</span>
+      <span class="pn-title">CartaBio — Immune Database</span>
+    </div>
+  </a>
+  <a href="index.html">
+    <div style="text-align:right">
+      <span class="pn-dir">Back to</span>
+      <span class="pn-title">All Projects</span>
+    </div>
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
+</div>
+
+</body>
+</html>

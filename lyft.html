@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lyft Traffic Analysis — Yilin Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ─────────────────────────────── */
+    :root {
+      --bg:      #F5F2ED;
+      --bg-2:    #EDE8E1;
+      --surface:    #FFFFFF;
+      --border:  #C8C0B4;
+      --border-2:   #D0CBC0;
+
+      --ink-1:   #1A1814;   /* headings */
+      --ink-2:   #48403A;   /* body      */
+      --ink-3:   #8A8278;   /* captions  */
+
+      --accent:  #C4156A;
+      
+
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans:  'Inter', system-ui, sans-serif;
+      --mono:  'JetBrains Mono', monospace;
+
+      --r-sm: 0;
+      --r:    0;
+      --r-lg: 0;
+
+      --sh: 0 1px 4px rgba(0,0,0,.05), 0 4px 16px rgba(0,0,0,.06);
+    }
+
+    /* ── RESET ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img  { display: block; width: 100%; height: auto; }
+
+    /* ── UTILITY ────────────────────────────── */
+    .mono  { font-family: var(--mono); }
+    .serif { font-family: var(--serif); }
+    .muted { color: var(--ink-3); }
+
+    /* ── NAV ────────────────────────────────── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200;
+      display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 0;
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; font-weight: 500; color: var(--ink-2);
+                  text-decoration: none; padding: 5px 14px; border-radius: 0;
+                  transition: background .15s, color .15s; display: flex; align-items: center; gap: 6px; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+    .nav a.pill.cta  { background: var(--ink-1); color: #fff; }
+    .nav a.pill.cta:hover { background: #333; }
+
+    /* ── PAGE LAYOUT ────────────────────────── */
+    .page { max-width: 1160px; margin: 0 auto; padding: 0 64px; }
+
+    /* ── PROJECT HEADER ─────────────────────── */
+    .proj-header {
+      padding-top: 120px; padding-bottom: 72px;
+      display: grid; grid-template-columns: 1fr 320px; gap: 64px; align-items: start;
+    }
+    .proj-eyebrow {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--mono); font-size: 11px; font-weight: 500;
+      color: var(--accent); text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 20px;
+    }
+    .proj-eyebrow::before { content: ''; width: 20px; height: 1.5px; background: var(--accent); flex-shrink: 0; }
+    .proj-title { font-family: var(--serif); font-size: clamp(48px, 5.5vw, 80px);
+                  line-height: 1; margin-bottom: 14px; }
+    .proj-title em { font-style: italic; color: var(--accent); }
+    .proj-subtitle { font-size: 18px; font-weight: 300; color: var(--ink-3); margin-bottom: 28px; }
+    .proj-body { font-size: 15px; line-height: 1.8; color: var(--ink-2); max-width: 56ch; }
+    .proj-body strong { color: var(--ink-1); font-weight: 600; }
+
+    /* sidebar info card */
+    .info-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 0;
+      padding: 28px; display: flex; flex-direction: column; gap: 20px; margin-top: 4px;
+    }
+    .info-row .label { font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+                       text-transform: uppercase; letter-spacing: .1em; margin-bottom: 5px; }
+    .info-row .value { font-size: 13px; font-weight: 500; color: var(--ink-1); line-height: 1.5; }
+    .info-divider { height: 1px; background: var(--border); }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { padding: 3px 10px; background: var(--bg-2); border: 1px solid var(--border);
+           border-radius: 0; font-size: 11px; font-weight: 500; color: var(--ink-3); }
+
+    /* ── METRICS STRIP ──────────────────────── */
+    .metrics-strip {
+      background: var(--ink-1); color: #fff;
+      padding: 40px 64px;
+    }
+    .metrics-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+    }
+    .metric .m-label { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,.4);
+                       text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+    .metric .m-value { font-family: var(--serif); font-size: 44px; line-height: 1;
+                       margin-bottom: 8px; }
+    .metric .m-value.pink { color: #F9A8D4; }
+    .metric .m-value.blue { color: #93C5FD; }
+    .metric .m-value.yellow { color: #FCD34D; }
+    .metric .m-desc { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,.5); }
+
+    /* ── DIVIDER LINE ───────────────────────── */
+    .page-divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ── SECTION ────────────────────────────── */
+    .section { padding: 72px 0; }
+    .section + .section { border-top: 1px solid var(--border); }
+
+    .section-label {
+      font-family: var(--mono); font-size: 10px; font-weight: 500;
+      color: var(--ink-3); text-transform: uppercase; letter-spacing: .14em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .section-h { font-family: var(--serif); font-size: clamp(26px, 3vw, 40px); line-height: 1.1;
+                 margin-bottom: 16px; }
+    .section-h em { font-style: italic; color: var(--accent); }
+
+    .lead { font-size: 15px; line-height: 1.85; color: var(--ink-2); max-width: 62ch; margin-bottom: 40px; }
+    .lead strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── LAYOUT HELPERS ─────────────────────── */
+    .cols-2    { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+    .cols-6040 { display: grid; grid-template-columns: 3fr 2fr; gap: 48px; align-items: start; }
+    .cols-4060 { display: grid; grid-template-columns: 2fr 3fr; gap: 48px; align-items: start; }
+    .cols-3    { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    /* ── CHART FRAME ────────────────────────── */
+    .chart {
+      border: 1px solid var(--border); border-radius: 0;
+      overflow: hidden; background: var(--surface); box-shadow: var(--sh);
+    }
+    .chart figcaption {
+      padding: 10px 16px; background: var(--bg);
+      border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+      letter-spacing: .03em;
+    }
+
+    /* borough grid */
+    .borough-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .borough-name { font-family: var(--mono); font-size: 11px; font-weight: 500;
+                    color: var(--accent); text-transform: uppercase; letter-spacing: .08em;
+                    margin-bottom: 8px; }
+
+    /* ── CALLOUT BLOCKS ─────────────────────── */
+    .callout {
+      border-left: 3px solid var(--accent); padding: 18px 24px;
+      background: rgba(196,21,106,.05); border-radius: 0;
+      margin: 32px 0;
+    }
+    .callout .c-label { font-family: var(--mono); font-size: 10px; font-weight: 500;
+                        color: var(--accent); text-transform: uppercase; letter-spacing: .1em;
+                        margin-bottom: 6px; }
+    .callout p { font-size: 14px; line-height: 1.75; color: var(--ink-2); }
+    .callout p strong { color: var(--ink-1); font-weight: 600; }
+
+    .callout-dark {
+      background: var(--ink-1); border-radius: 0;
+      padding: 36px 44px; margin: 40px 0;
+    }
+    .callout-dark .c-label { font-family: var(--mono); font-size: 10px; color: rgba(255,255,255,.4);
+                              text-transform: uppercase; letter-spacing: .12em; margin-bottom: 12px; }
+    .callout-dark p { font-size: 17px; line-height: 1.75; color: rgba(255,255,255,.9); }
+    .callout-dark p strong { color: #F9A8D4; font-weight: 700; }
+    .callout-dark p em { font-style: italic; color: rgba(255,255,255,.7); }
+
+    /* ── KEY POINTS LIST ────────────────────── */
+    .kp { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .kp li { display: flex; gap: 10px; font-size: 14px; line-height: 1.7; color: var(--ink-2); }
+    .kp li::before { content: '→'; color: var(--accent); font-family: var(--mono);
+                     font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .kp strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── AIRPORT CARDS ──────────────────────── */
+    .airport-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 24px 0;
+    }
+    .airport-card {
+      background: var(--bg-2); border: 1px solid var(--border);
+      border-radius: 0; padding: 20px 22px;
+    }
+    .airport-card h4 { font-family: var(--mono); font-size: 11px; font-weight: 500;
+                       color: var(--ink-1); text-transform: uppercase; letter-spacing: .08em;
+                       margin-bottom: 8px; }
+    .airport-card p { font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+    .airport-card strong { color: var(--ink-1); font-weight: 600; }
+
+    .rank-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 12px; font-weight: 500;
+      background: var(--ink-1); color: #fff;
+      padding: 5px 14px; border-radius: 0; margin-bottom: 20px;
+    }
+    .rank-badge .arrow { color: #F9A8D4; }
+
+    /* ── CONCLUSION ─────────────────────────── */
+    .conclusion { background: #2A1A20; padding: 80px 64px; }
+    .conclusion-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: start;
+    }
+    .conclusion .c-eyebrow { font-family: var(--mono); font-size: 10px;
+                              color: rgba(255,255,255,.35); text-transform: uppercase;
+                              letter-spacing: .12em; margin-bottom: 16px; }
+    .conclusion h2 { font-family: var(--serif); font-size: 38px; color: #fff;
+                     line-height: 1.1; margin-bottom: 20px; }
+    .conclusion h2 em { font-style: italic; color: #F9A8D4; }
+    .conclusion p { font-size: 14px; line-height: 1.85; color: rgba(255,255,255,.6); }
+    .conclusion p strong { color: rgba(255,255,255,.88); font-weight: 600; }
+
+    .findings-list { display: flex; flex-direction: column; gap: 12px; }
+    .finding-item {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 0; padding: 18px 22px;
+    }
+    .finding-item .fi-title { font-size: 13px; font-weight: 600;
+                               color: rgba(255,255,255,.88); margin-bottom: 4px; }
+    .finding-item .fi-desc  { font-size: 12px; line-height: 1.65;
+                               color: rgba(255,255,255,.45); }
+
+    /* ── PROJECT NAV ────────────────────────── */
+    .proj-nav {
+      max-width: 1160px; margin: 0 auto; padding: 48px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    .proj-nav a { text-decoration: none; display: flex; align-items: center; gap: 12px; }
+    .proj-nav .pn-dir  { font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+                          text-transform: uppercase; letter-spacing: .1em; display: block; margin-bottom: 3px; }
+    .proj-nav .pn-title { font-size: 15px; font-weight: 600; color: rgba(255,255,255,.85); }
+    .proj-nav a:hover .pn-title { color: var(--accent); }
+    .proj-nav .icon { color: var(--ink-3); transition: color .15s; }
+    .proj-nav a:hover .icon { color: var(--accent); }
+
+    /* ── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 900px) {
+      .page { padding: 0 32px; }
+      .proj-header, .cols-6040, .cols-4060, .cols-2, .conclusion-inner { grid-template-columns: 1fr; }
+      .proj-header { padding-top: 100px; }
+      .metrics-inner { grid-template-columns: 1fr 1fr; gap: 28px; }
+      .metrics-strip { padding: 40px 32px; }
+      .section { padding: 56px 0; }
+      .borough-grid { grid-template-columns: 1fr; }
+      .conclusion { padding: 60px 32px; }
+      .proj-nav { padding: 40px 32px; flex-direction: column; gap: 24px; align-items: flex-start; }
+    }
+    @media (max-width: 560px) {
+      .metrics-inner { grid-template-columns: 1fr; }
+      .airport-row { grid-template-columns: 1fr; }
+      .cols-3 { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="nav" aria-label="Site navigation">
+  <a href="index.html" class="nav-logo">YW</a>
+  <a href="index.html#work" class="pill">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    All Projects
+  </a>
+  <a href="hci.html" class="pill">Next →</a>
+</nav>
+
+<!-- ── PROJECT HEADER ── -->
+<div class="page">
+  <header class="proj-header">
+    <div>
+      <div class="proj-eyebrow">01 · Insight &nbsp;/&nbsp; Problem Identification</div>
+      <h1 class="proj-title">Lyft, <em>lift up</em></h1>
+      <p class="proj-subtitle">NYC Rideshare Traffic Analysis</p>
+      <p class="proj-body">
+        My role in this project focused on <strong>recognizing where the transport system was underperforming</strong> and making that visible through data. By applying statistical analysis to NYC TLC trip records, I identified recurring patterns in temporal demand, spatial supply gaps, and pricing structure — ultimately reframing the problem from "low volume" to <strong>"misallocated supply during predictable peak windows."</strong>
+      </p>
+    </div>
+
+    <aside class="info-card">
+      <div class="info-row">
+        <div class="label">Role</div>
+        <div class="value">Data Analyst · Problem Framing</div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-row">
+        <div class="label">Dataset</div>
+        <div class="value">NYC TLC Trip Record Data</div>
+      </div>
+      <div class="info-divider"></div>
+      <div class="info-row">
+        <div class="label">Methods</div>
+        <div class="tag-list">
+          <span class="tag">Time-series</span>
+          <span class="tag">KDE</span>
+          <span class="tag">Market Share</span>
+          <span class="tag">Spatial Analysis</span>
+          <span class="tag">Python</span>
+        </div>
+      </div>
+    </aside>
+  </header>
+</div>
+
+<!-- ── METRICS STRIP ── -->
+<div class="metrics-strip">
+  <div class="metrics-inner">
+    <div class="metric">
+      <div class="m-label">Peak-Hour Market Share</div>
+      <div class="m-value pink">~23%</div>
+      <div class="m-desc">Lyft's share at 15–18h — its lowest point when total demand peaks</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">LGA Priority Shift</div>
+      <div class="m-value blue">#1 → 62</div>
+      <div class="m-desc">LaGuardia dropped from #1 to #62 in Lyft's driver zone priority score</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Core Trip Segment</div>
+      <div class="m-value yellow">0–2 mi</div>
+      <div class="m-desc">Lyft's over-indexed segment — low-price, short-distance trips</div>
+    </div>
+    <div class="metric">
+      <div class="m-label">Boroughs Analyzed</div>
+      <div class="m-value">5</div>
+      <div class="m-desc">Manhattan, Bronx, Brooklyn, Queens + Staten Island (special case)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div class="page">
+
+  <!-- A. Temporal Patterns -->
+  <section class="section">
+    <div class="section-label">A &nbsp; Temporal Patterns</div>
+    <div class="cols-6040">
+
+      <div>
+        <h2 class="section-h">Demand has <em>time patterns</em></h2>
+        <p class="lead">
+          Lyft's hourly data reveals two distinct demand profiles. Weekdays show <strong>clear commuter peaks at 7–9 AM and 5–7 PM</strong>; weekends are flatter, with activity concentrated in afternoons and evenings. This predictability is strategically significant — <strong>demand is foreseeable, but Lyft's supply response consistently lags.</strong>
+        </p>
+        <ul class="kp">
+          <li>When total demand surges, Lyft <strong>consistently loses share to Uber</strong>, indicating insufficient driver supply at peak hours</li>
+          <li>Between 15:00–18:00, total trip volume peaks while <strong>Lyft's market share falls to ~23%</strong> — its lowest point</li>
+          <li>Weekend demand is flatter, with elevated activity during afternoon and evening leisure hours</li>
+        </ul>
+        <div class="callout">
+          <div class="c-label">Finding</div>
+          <p>Demand is predictable. The problem is not uncertainty — it's a <strong>systematic failure to pre-position supply</strong> ahead of known peak windows.</p>
+        </div>
+      </div>
+
+      <figure class="chart">
+        <img src="assets/slide3_Picture 26.png" alt="Lyft hourly demand patterns and market share by hour, NYC overall" />
+        <figcaption>Demand over Time &amp; Market Share by Hour — NYC Overall</figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- B. By Borough -->
+  <section class="section">
+    <div class="section-label">B &nbsp; Spatial Patterns — By Borough</div>
+
+    <h2 class="section-h">The same pattern, <em>across every borough</em></h2>
+    <p class="lead">
+      To validate whether the temporal-spatial gap was systemic or borough-specific, I analyzed all five NYC boroughs independently. The inverse relationship between total demand and Lyft's market share holds consistently — confirming a <strong>platform-wide supply allocation problem</strong>, not a localized anomaly.
+    </p>
+
+    <div class="borough-grid">
+      <div>
+        <div class="borough-name">Manhattan</div>
+        <figure class="chart">
+          <img src="assets/slide3_Picture 66.png" alt="Demand and Lyft market share by hour — Manhattan" />
+          <figcaption>Peak share ~31% (3–4 AM) → drops to ~25% at evening rush</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="borough-name">Bronx</div>
+        <figure class="chart">
+          <img src="assets/slide3_Picture 69.png" alt="Demand and Lyft market share by hour — Bronx" />
+          <figcaption>Consistent inverse trend — demand up, share down</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="borough-name">Brooklyn</div>
+        <figure class="chart">
+          <img src="assets/slide3_Picture 67.png" alt="Demand and Lyft market share by hour — Brooklyn" />
+          <figcaption>Share falls below 23% during evening rush</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="borough-name">Queens</div>
+        <figure class="chart">
+          <img src="assets/slide3_Picture 68.png" alt="Demand and Lyft market share by hour — Queens" />
+          <figcaption>Drops below 22% at peak — lowest absolute share across boroughs</figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="callout-dark">
+      <div class="c-label">Cross-Borough Insight</div>
+      <p>When total demand surges, Lyft <strong>consistently loses share to Uber</strong> across all boroughs — indicating the driver supply shortage during peak hours is a <em>structural, platform-wide problem</em>.</p>
+    </div>
+
+    <!-- Staten Island -->
+    <div style="margin-top: 56px;">
+      <div class="section-label">↳ &nbsp; Special Case: Staten Island</div>
+      <div class="cols-4060">
+        <div>
+          <h3 class="section-h" style="font-size: 26px;">The <em>outlier</em></h3>
+          <p class="lead" style="margin-bottom: 20px;">
+            Staten Island shows the <strong>opposite pattern</strong>: when total demand increases, Lyft actually gains share rather than losing it.
+          </p>
+          <ul class="kp">
+            <li>Smallest trip volume among all boroughs</li>
+            <li><strong>Demand-share relationship is inverted</strong> — Lyft gains when demand rises</li>
+            <li>Reveals a structural supply shortage: any available driver is immediately utilized</li>
+            <li>Absence of competition makes Lyft the default when supply is present</li>
+          </ul>
+          <div class="callout">
+            <div class="c-label">Implication</div>
+            <p><strong>Absolute supply scarcity</strong> can paradoxically improve share — validating that supply constraints, not demand, are the binding constraint system-wide.</p>
+          </div>
+        </div>
+        <figure class="chart">
+          <img src="assets/slide3_Picture 77.png" alt="Staten Island — inverse demand-share relationship" />
+          <figcaption>Staten Island · Unique inverse pattern vs all other boroughs</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- C. Pricing Structure -->
+  <section class="section">
+    <div class="section-label">C &nbsp; Pricing &amp; Trip Distance Structure</div>
+
+    <div class="cols-4060" style="margin-bottom: 32px;">
+      <div>
+        <h2 class="section-h">Lyft's core: <em>low-price, short trips</em></h2>
+        <p class="lead" style="margin-bottom: 20px;">
+          Pricing and distance data reveal what types of trips Lyft predominantly captures — and why that makes peak-hour share loss especially costly.
+        </p>
+        <ul class="kp">
+          <li>Lyft charges a <strong>lower per-mile price for short trips (0–5 miles)</strong>, creating a price-based selection effect</li>
+          <li>Lyft receives disproportionately high short trips (0–2 mi); KDE distribution confirms a sharp peak not seen in Uber</li>
+          <li><strong>Pricing and demand reinforce each other</strong> — lower short-trip pricing attracts more short-trip riders, concentrating Lyft in low-revenue segments</li>
+        </ul>
+        <div class="callout" style="margin-top: 24px;">
+          <div class="c-label">Core Insight</div>
+          <p>Lyft's business is concentrated in <strong>low-price, short-distance trips</strong> — making peak-hour supply failure financially more damaging than it appears from share numbers alone.</p>
+        </div>
+      </div>
+      <figure class="chart">
+        <img src="assets/slide4_Picture 1.png" alt="Average fare per mile and trip distance distribution — Lyft vs Uber" />
+        <figcaption>Fare per Mile &amp; Trip Distance Distribution — Lyft vs Uber</figcaption>
+      </figure>
+    </div>
+
+    <figure class="chart">
+      <img src="assets/slide4_Picture 2.png" alt="Extended pricing and distance analysis" />
+      <figcaption>Extended Pricing &amp; Distance Analysis</figcaption>
+    </figure>
+  </section>
+
+  <!-- D. Airport Paradox -->
+  <section class="section">
+    <div class="section-label">D &nbsp; Spatial Finding — Airport Priority Paradox</div>
+
+    <div class="cols-4060">
+      <div>
+        <h2 class="section-h">Finding: Priority contrast <em>of 2 airports</em></h2>
+        <p class="lead" style="margin-bottom: 16px;">
+          Spatial analysis of driver zone priority scores revealed a striking anomaly — Lyft's algorithm and driver behavior operate on completely different utility functions.
+        </p>
+
+        <div class="rank-badge">
+          LaGuardia: #1 <span class="arrow">→</span> #62 &nbsp;&nbsp; JFK: #3 <span class="arrow">→</span> #1
+        </div>
+
+        <div class="airport-row">
+          <div class="airport-card">
+            <h4>JFK Airport</h4>
+            <p>Major international hub. Long trips, <strong>high revenue</strong> — but drivers face 60–150 min queues and long dead miles back. Most drivers voluntarily avoid it.</p>
+          </div>
+          <div class="airport-card">
+            <h4>LaGuardia Airport</h4>
+            <p>Closer to Manhattan. Short trips (6–12 mi), <strong>fast queue (30–90 min)</strong>, virtually guaranteed next ride. Drivers self-organize and flood the zone.</p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <div class="c-label">The Paradox</div>
+          <p><strong>The algorithm is financially correct, but driver behavior is utility-correct.</strong> JFK offers higher revenue per trip, but its friction (queue time, dead miles) drives drivers away — creating a supply shortage at a high-demand location without any platform signal to correct it.</p>
+        </div>
+      </div>
+
+      <figure class="chart">
+        <img src="assets/slide5_Picture 8.png" alt="NYC airport priority analysis — LGA and JFK driver zone behavior" />
+        <figcaption>Airport Priority Analysis — LGA vs JFK driver behavior map</figcaption>
+      </figure>
+    </div>
+
+    <div class="cols-3" style="margin-top: 32px;">
+      <figure class="chart">
+        <img src="assets/slide5_Picture 4.png" alt="Supply-demand gap analysis" />
+        <figcaption>Supply–Demand Gap Analysis</figcaption>
+      </figure>
+      <figure class="chart">
+        <img src="assets/slide5_Picture 5.png" alt="Driver behavior pattern" />
+        <figcaption>Driver Behavior Pattern</figcaption>
+      </figure>
+      <figure class="chart">
+        <img src="assets/slide5_Picture 7.png" alt="Zone priority distribution" />
+        <figcaption>Zone Priority Distribution</figcaption>
+      </figure>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<!-- ── CONCLUSION ── -->
+<div class="conclusion">
+  <div class="conclusion-inner">
+    <div>
+      <div class="c-eyebrow">Project Outcome</div>
+      <h2>Reframing the <em>problem space</em></h2>
+      <p>
+        The analysis revealed a clear contrast between temporal and spatial performance.
+        <strong>Lyft's challenge was not a lack of demand or supply — but a misalignment between when and where supply was available versus when demand peaked.</strong>
+        <br><br>
+        Rather than prescribing a single solution, this reframing defined the problem space and set the stage for targeted intervention design.
+      </p>
+    </div>
+    <div class="findings-list">
+      <div class="finding-item">
+        <div class="fi-title">Supply is misallocated, not insufficient</div>
+        <div class="fi-desc">Drivers are present in the system but positioned in wrong zones or inactive during known peak windows</div>
+      </div>
+      <div class="finding-item">
+        <div class="fi-title">Demand is predictable</div>
+        <div class="fi-desc">Weekday commuter peaks at 7–9 AM and 5–7 PM are consistent — this is a solvable scheduling problem</div>
+      </div>
+      <div class="finding-item">
+        <div class="fi-title">Algorithmic vs behavioral incentive gap</div>
+        <div class="fi-desc">The JFK/LGA case shows platform incentives and driver utility functions diverge — redesigning incentives could realign behavior</div>
+      </div>
+      <div class="finding-item">
+        <div class="fi-title">Short-trip concentration compounds the problem</div>
+        <div class="fi-desc">Lyft's pricing over-indexes low-revenue segments, making peak-hour share loss financially more costly than raw percentages suggest</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PROJECT NAV ── -->
+<div class="proj-nav">
+  <a href="index.html">
+    <svg class="icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    <div>
+      <span class="pn-dir">Back to</span>
+      <span class="pn-title">All Projects</span>
+    </div>
+  </a>
+  <a href="hci.html">
+    <div style="text-align:right">
+      <span class="pn-dir">Next Project</span>
+      <span class="pn-title">Healthy HCI — VR Ergonomics</span>
+    </div>
+    <svg class="icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
+</div>
+
+</body>
+</html>

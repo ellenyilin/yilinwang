@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CartaBio Immune Database — Yilin Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* ── Juliette Cezzar mint-blue background ── */
+      --bg:      #F5F2ED;   /* very light mint-blue */
+      --bg-2:    #EDE8E1;
+      --border:  #C8C0B4;
+      --ink-1:   #1A1814;
+      --ink-2:   #48403A;
+      --ink-3:   #8A8278;
+      --accent:  #3B5EA6;   /* data blue */
+      --accent-2:#C94D0A;   /* deep orange for numbers */
+      
+      --serif:  'DM Serif Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { background: transparent; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img  { display: block; max-width: 100%; height: auto; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.06); white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; color: var(--ink-2); text-decoration: none;
+                  padding: 5px 14px; transition: background .15s;
+                  display: flex; align-items: center; gap: 6px; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+
+    /* ── Juliette Cezzar layout influence: larger body text, generous leading ── */
+    body { font-size: 16px; }
+    p { font-size: 15px; line-height: 1.85; }
+
+    /* ── PAGE ── */
+    .page { max-width: 1100px; margin: 0 auto; padding: 0 64px; }
+
+    /* ── HEADER — Juliette-style two-column ── */
+    .proj-header { padding-top: 120px; padding-bottom: 0; }
+
+    .proj-eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+    }
+    .proj-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Two column header: left = title, right = meta */
+    .header-cols {
+      display: grid; grid-template-columns: 1fr 1fr;
+      border-top: 1px solid var(--ink-1);
+      gap: 0;
+    }
+    .h-left {
+      padding: 36px 56px 36px 0;
+      border-right: 1px solid var(--border);
+    }
+    .h-right {
+      padding: 36px 0 36px 56px;
+      display: flex; flex-direction: column; gap: 28px;
+    }
+
+    .proj-title {
+      font-family: var(--serif); font-size: clamp(44px, 5vw, 72px);
+      line-height: .96; letter-spacing: -.01em; margin-bottom: 20px;
+    }
+    .proj-title em { font-style: italic; color: var(--accent); }
+
+    .proj-desc {
+      font-size: 14px; line-height: 1.82; color: var(--ink-2); max-width: 46ch;
+    }
+    .proj-desc strong { color: var(--ink-1); font-weight: 600; }
+
+    /* Stats: big numbers, Juliette-style left-aligned */
+    .stat-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+    .stat-item { padding-right: 24px; }
+    .stat-item + .stat-item { padding-left: 24px; padding-right: 0; border-left: 1px solid var(--border); }
+    .stat-n { font-family: var(--serif); font-size: 48px; line-height: 1; color: var(--ink-1); }
+    .stat-n em { font-style: normal; color: var(--accent-2); }
+    .stat-l { font-size: 11px; color: var(--ink-3); margin-top: 4px; line-height: 1.4; }
+
+    /* Meta rows */
+    .meta-block { display: flex; flex-direction: column; gap: 12px; }
+    .meta-row { display: flex; flex-direction: column; gap: 3px; }
+    .meta-row + .meta-row { padding-top: 12px; border-top: 1px solid var(--border); }
+    .ml { font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+          text-transform: uppercase; letter-spacing: .12em; }
+    .mv { font-size: 13px; color: var(--ink-1); line-height: 1.5; }
+
+    /* ── SECTIONS ── */
+    .section { padding: 52px 0; border-top: 1px solid var(--border); }
+
+    .sec-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .16em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .sec-h { font-family: var(--serif); font-size: clamp(26px, 2.8vw, 36px);
+             line-height: 1.08; margin-bottom: 14px; }
+    .sec-h em { font-style: italic; color: var(--accent); }
+
+    .lead { font-size: 14px; line-height: 1.82; color: var(--ink-2); max-width: 56ch; margin-bottom: 24px; }
+    .lead strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── GRIDS ── */
+    .cols-6040 { display: grid; grid-template-columns: 3fr 2fr; gap: 52px; align-items: start; }
+    .cols-4060 { display: grid; grid-template-columns: 2fr 3fr; gap: 52px; align-items: start; }
+    .cols-5050 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: start; }
+
+    /* ── FIGURES ── */
+    .fig { border: 1px solid var(--border); overflow: hidden; }
+    .fig figcaption {
+      padding: 7px 14px; background: var(--bg-2); border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+    }
+
+    /* ── CHALLENGE TABLE ── */
+    .ch-table { width: 100%; border-collapse: collapse; }
+    .ch-table tr { border-bottom: 1px solid var(--border); }
+    .ch-table tr:first-child { border-top: 1px solid var(--border); }
+    .ch-table td { padding: 13px 0; vertical-align: top; }
+    .ch-n { width: 36px; font-family: var(--mono); font-size: 9px;
+            color: var(--accent); font-weight: 700; padding-top: 2px; }
+    .ch-t { font-size: 13px; font-weight: 600; color: var(--ink-1);
+            width: 170px; padding-right: 28px; }
+    .ch-d { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+    /* ── FUNNEL ── */
+    .funnel-wrap {
+      display: flex; flex-direction: column; gap: 0; align-items: center;
+    }
+    .funnel-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em; margin-bottom: 12px;
+      align-self: flex-start;
+    }
+    .funnel-wrap img { width: 100%; height: auto; display: block; }
+
+    /* ── ARCH NOTE ── */
+    .arch-note {
+      border-left: 2px solid var(--accent); padding: 12px 18px; margin-top: 18px;
+      background: rgba(59,94,166,.04);
+    }
+    .arch-note .anl {
+      font-family: var(--mono); font-size: 9px; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .12em; margin-bottom: 5px;
+    }
+    .arch-note p { font-size: 12px; line-height: 1.7; color: var(--ink-2); }
+    .arch-note strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── KP LIST ── */
+    .kp { list-style: none; display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+    .kp li { display: flex; gap: 10px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+    .kp li::before { content: '→'; color: var(--accent); font-family: var(--mono);
+                     font-weight: 700; flex-shrink: 0; }
+    .kp strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── IMPL TABLE ── */
+    .impl-table { width: 100%; border-collapse: collapse; }
+    .impl-table tr { border-bottom: 1px solid var(--border); }
+    .impl-table tr:first-child { border-top: 1px solid var(--border); }
+    .impl-table td { padding: 16px 0; vertical-align: top; }
+    .im-n { width: 36px; font-family: var(--serif); font-size: 20px; line-height: 1;
+            color: var(--border); padding-right: 12px; }
+    .im-t { font-size: 13px; font-weight: 600; color: var(--ink-1);
+            width: 210px; padding-right: 28px; }
+    .im-d { font-size: 13px; line-height: 1.72; color: var(--ink-2); }
+    .im-d strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── CALLOUT ── */
+    .callout { border-top: 2px solid var(--accent); padding: 18px 0 0; margin: 32px 0 0; }
+    .callout .cl { font-family: var(--mono); font-size: 9px; color: var(--accent);
+                   text-transform: uppercase; letter-spacing: .14em; margin-bottom: 8px; }
+    .callout p { font-size: 14px; line-height: 1.75; color: var(--ink-2); max-width: 64ch; }
+    .callout p strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── CONCLUSION ── */
+    .conclusion { background: #1A2540; padding: 64px; }
+    .conclusion-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+    }
+    .c-eyebrow { font-family: var(--mono); font-size: 9px; color: rgba(28,25,22,.4);
+                 text-transform: uppercase; letter-spacing: .14em; margin-bottom: 14px; }
+    .conclusion h2 { font-family: var(--serif); font-size: 32px; color: #fff;
+                     line-height: 1.1; margin-bottom: 16px; }
+    .conclusion h2 em { font-style: italic; color: #93B4E0; }
+    .conclusion p { font-size: 13px; line-height: 1.85; color: rgba(255,255,255,.65); }
+    .conclusion p strong { color: rgba(255,255,255,.9); font-weight: 600; }
+
+    /* Outcome list — plain line-separated rows, zero background */
+    .outcome-list { border-top: 1px solid rgba(255,255,255,.15); }
+    .oi {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 16px;
+      background: none;
+    }
+    .oi .ot { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.9); }
+    .oi .od { font-size: 12px; line-height: 1.6; color: rgba(255,255,255,.5); }
+
+    /* ── PROJ NAV ── */
+    .proj-nav {
+      max-width: 1100px; margin: 0 auto; padding: 36px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(255,255,255,.1);
+      background: #1A2540;
+    }
+    .proj-nav a { text-decoration: none; display: flex; align-items: center; gap: 12px; background: transparent; }
+    .pn-dir { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.35);
+              text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 3px; }
+    .pn-title { font-size: 14px; font-weight: 600; color: rgba(255,255,255,.85); }
+    .proj-nav a:hover .pn-title { color: #3B5EA6; }
+    .nav-icon { color: rgba(255,255,255,.3); transition: color .15s; }
+    .proj-nav a:hover .nav-icon { color: #3B5EA6; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .page { padding: 0 28px; }
+      .header-cols { grid-template-columns: 1fr; }
+      .h-left { border-right: none; border-bottom: 1px solid var(--border); padding: 28px 0; }
+      .h-right { padding: 24px 0 0; }
+      .stat-pair { grid-template-columns: 1fr 1fr; }
+      .cols-6040, .cols-4060, .cols-5050, .conclusion-inner { grid-template-columns: 1fr; }
+      .conclusion, .proj-nav { padding: 36px 28px; }
+      .proj-nav { flex-direction: column; gap: 20px; align-items: flex-start; }
+      .oi { grid-template-columns: 1fr; gap: 4px; }
+      .ch-t, .im-t { width: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">YW</a>
+  <a href="berkeley.html" class="pill">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    Prev
+  </a>
+  <a href="index.html#work" class="pill">All Projects</a>
+  <a href="sensetime.html" class="pill">Next →</a>
+</nav>
+
+<!-- ═══ HEADER ═══ -->
+<div class="page">
+  <div class="proj-header">
+    <div class="proj-eyebrow">04 · Build / Implementation &amp; System Improvement</div>
+
+    <div class="header-cols">
+      <!-- LEFT: title + description -->
+      <div class="h-left">
+        <h1 class="proj-title">CartaBio<br><em>Immune<br>Database</em></h1>
+        <p class="proj-desc">
+          Contributed to a large-scale biological data platform supporting <strong>40K+ experimental datasets</strong> and hundreds of millions of single-cell profiles. Designed and implemented automated QC pipelines and data exploration interfaces for researchers navigating complex biological data.
+        </p>
+      </div>
+
+      <!-- RIGHT: stats + meta -->
+      <div class="h-right">
+        <div class="stat-pair">
+          <div class="stat-item">
+            <div class="stat-n"><em>600k+</em></div>
+            <div class="stat-l">Single-cell profiles integrated</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-n">80%<em>→94%</em></div>
+            <div class="stat-l">Data integrity after QC redesign</div>
+          </div>
+        </div>
+
+        <div class="meta-block">
+          <div class="meta-row">
+            <div class="ml">Role &amp; Period</div>
+            <div class="mv">AI Research Intern (Remote) · May – Oct 2025 · Boston</div>
+          </div>
+          <div class="meta-row">
+            <div class="ml">Stack</div>
+            <div class="mv">Python · AWS EC2 · LaminDB · AnnData · GPU cluster</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CONTENT ═══ -->
+<div class="page">
+
+  <!-- A. System Challenge -->
+  <section class="section">
+    <div class="sec-label">A &nbsp; The System Challenge</div>
+
+    <div class="cols-6040">
+      <div>
+        <h2 class="sec-h">From <em>fragmented data</em><br>to a reusable system</h2>
+        <p class="lead">
+          Public single-cell data is distributed across dozens of platforms with inconsistent formats and incompatible annotation standards. No single source is query-ready. The challenge: build a pipeline that ingests, normalizes, and annotates this data at scale — producing a structured, versioned database.
+        </p>
+
+        <table class="ch-table">
+          <tr>
+            <td class="ch-n">01</td>
+            <td class="ch-t">Fragmented Sources</td>
+            <td class="ch-d">Data across dozens of public platforms with inconsistent file formats and metadata schemas</td>
+          </tr>
+          <tr>
+            <td class="ch-n">02</td>
+            <td class="ch-t">Inconsistent Annotation</td>
+            <td class="ch-d">Cell types defined differently across datasets — no unified taxonomy or labeling standard</td>
+          </tr>
+          <tr>
+            <td class="ch-n">03</td>
+            <td class="ch-t">Scale &amp; Compute</td>
+            <td class="ch-d">600k+ cells require GPU-accelerated clustering — CPU-only pipelines too slow for iteration</td>
+          </tr>
+          <tr>
+            <td class="ch-n">04</td>
+            <td class="ch-t">Reproducibility</td>
+            <td class="ch-d">Ad-hoc scripts produced non-reproducible outputs — needed versioned data lineage tracking</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Funnel — single composed image -->
+      <div class="funnel-wrap">
+        <div class="funnel-label">Database Construction Pipeline</div>
+        <!-- User-provided funnel diagram — used as-is from conversation -->
+        <img src="assets/datapipeline.png"
+             alt="Database construction pipeline: Public scRNAseq sources → CartaBio full database → T cell database → T-Cell with states → Downstream tasks" />
+      </div>
+    </div>
+  </section>
+
+  <!-- B. Cloud Pipeline Architecture -->
+  <section class="section">
+    <div class="sec-label">B &nbsp; Cloud Pipeline Architecture</div>
+
+    <div class="cols-4060">
+      <div>
+        <h2 class="sec-h">Two-instance<br><em>AWS architecture</em></h2>
+        <p class="lead">
+          The pipeline runs across two specialized EC2 instances — separating annotation logic from GPU-heavy clustering. This enables independent scaling and parallel iteration on annotation without re-running compute jobs.
+        </p>
+        <ul class="kp">
+          <li><strong>Data Pipeline (CPU)</strong> — h5ad download, cell annotation, metadata management &amp; versioning via LaminDB</li>
+          <li><strong>Datapipeline2 (GPU)</strong> — preprocessing, GPU Leiden clustering, automated annotation, T-cell screening</li>
+          <li><strong>End-to-end lineage</strong> — all intermediate files versioned; full audit trail for reproducibility</li>
+        </ul>
+        <div class="arch-note">
+          <div class="anl">Key Design Decision</div>
+          <p>Separating annotation (iterative, CPU-bound) from clustering (batch, GPU-bound) allowed <strong>parallel iteration on annotation logic</strong> without re-running expensive GPU jobs each time.</p>
+        </div>
+      </div>
+
+      <figure class="fig">
+        <img src="assets/slide12_workflow.png"
+             alt="T Cell Database Construct Process — two-instance AWS pipeline" />
+        <figcaption>AWS pipeline architecture — CPU annotation instance + GPU clustering instance</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- C. Implementation Decisions -->
+  <section class="section">
+    <div class="sec-label">C &nbsp; Implementation Decisions</div>
+
+    <div class="cols-5050" style="margin-bottom: 32px;">
+      <div>
+        <h2 class="sec-h">Build choices that<br><em>held under pressure</em></h2>
+      </div>
+      <div style="padding-top: 8px;">
+        <p style="font-size:14px;line-height:1.78;color:var(--ink-2);">Each decision addressed a specific failure mode from earlier iterations — not defaults, but deliberate trade-offs made under real constraints.</p>
+      </div>
+    </div>
+
+    <table class="impl-table">
+      <tr>
+        <td class="im-n">1</td>
+        <td class="im-t">h5ad as unified format</td>
+        <td class="im-d">All sources normalized to <strong>h5ad (AnnData)</strong> — the de facto standard for single-cell data. Eliminates re-conversion for every downstream tool.</td>
+      </tr>
+      <tr>
+        <td class="im-n">2</td>
+        <td class="im-t">GPU Leiden clustering</td>
+        <td class="im-d"><strong>GPU-accelerated Leiden algorithm</strong> replaces CPU-only clustering — from hours per iteration to minutes, enabling rapid exploration at 600k-cell scale.</td>
+      </tr>
+      <tr>
+        <td class="im-n">3</td>
+        <td class="im-t">Automated cell annotation</td>
+        <td class="im-d">Reference-based automated annotation assigns labels via transcriptomic profiles — improving consistency from 80% to <strong>94%</strong> while cutting manual review time.</td>
+      </tr>
+      <tr>
+        <td class="im-n">4</td>
+        <td class="im-t">LaminDB for data lineage</td>
+        <td class="im-d"><strong>LaminDB</strong> versions all input/output files and records process metadata — enabling full reproducibility and audit of every pipeline run.</td>
+      </tr>
+      <tr>
+        <td class="im-n">5</td>
+        <td class="im-t">Product interface design</td>
+        <td class="im-d">Co-designed internal data exploration tools — structuring how processed data is presented and navigated, improving <strong>clarity and usability</strong> for researchers across the team.</td>
+      </tr>
+    </table>
+
+    <div class="callout">
+      <div class="cl">PM Perspective</div>
+      <p>The pipeline is itself a product: it has users (researchers), inputs, outputs, failure modes, and measurable performance. Building it required the same systems thinking as product design — just applied at the infrastructure level.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ CONCLUSION ═══ -->
+<div class="conclusion">
+  <div class="conclusion-inner">
+    <div>
+      <div class="c-eyebrow">Project Outcome</div>
+      <h2>Data as <em>infrastructure</em></h2>
+      <p>
+        CartaBio is the "Build" phase of the PM cycle —
+        <strong>translating architecture into running infrastructure</strong> that a research team depends on.
+        <br><br>
+        The 600k-cell T-cell database reduced annotation inconsistency from 20% to 6% error rate and runs end-to-end in hours rather than weeks.
+      </p>
+    </div>
+    <div>
+      <div class="outcome-list">
+        <div class="oi">
+          <div class="ot">600k+ cells integrated</div>
+          <div class="od">From fragmented public sources into one normalized, queryable database</div>
+        </div>
+        <div class="oi">
+          <div class="ot">80% → 94% integrity</div>
+          <div class="od">Automated QC pipeline cut annotation error rate from 20% to 6%</div>
+        </div>
+        <div class="oi">
+          <div class="ot">Reproducible end-to-end</div>
+          <div class="od">LaminDB versioning enables full data lineage audit and pipeline replay</div>
+        </div>
+        <div class="oi">
+          <div class="ot">Query-ready for downstream ML</div>
+          <div class="od">Structured h5ad output compatible with scRNA-seq analysis toolchains</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT NAV -->
+<div class="proj-nav">
+  <a href="berkeley.html">
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    <div>
+      <span class="pn-dir">Previous</span>
+      <span class="pn-title">Berkeley Rock &amp; Roar</span>
+    </div>
+  </a>
+  <a href="sensetime.html">
+    <div style="text-align:right">
+      <span class="pn-dir">Next Project</span>
+      <span class="pn-title">SenseTime — A/B Testing</span>
+    </div>
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
+</div>
+
+</body>
+</html>

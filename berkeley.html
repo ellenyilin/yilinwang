@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berkeley Rock & Roar — Yilin Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #F5F2ED;   /* cleaner near-white warm */
+      --bg-2:    #EDE8E1;
+      --surface: #FFFFFF;
+      --border:  #C8C0B4;
+      --ink-1:   #1A1814;
+      --ink-2:   #48403A;
+      --ink-3:   #8A8278;
+      --accent:  #EA631B;   /* Carrot Orange */
+         /* Light Steel Blue */
+      --serif:  'DM Serif Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+      --r:    0;
+      --r-lg: 0;
+      --sh:   0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img  { display: block; width: 100%; height: auto; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border); border-radius: 0;
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.07); white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; font-weight: 500; color: var(--ink-2);
+                  text-decoration: none; padding: 5px 14px; border-radius: 0;
+                  transition: background .15s, color .15s;
+                  display: flex; align-items: center; gap: 6px; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+
+    /* ── PAGE ── */
+    .page { max-width: 1160px; margin: 0 auto; padding: 0 64px; }
+
+    /* ── HEADER ── */
+    .header-grid {
+      padding-top: 112px; padding-bottom: 52px;
+      display: grid;
+      grid-template-columns: 2fr 1.6fr 1.6fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .proj-eyebrow {
+      font-family: var(--mono); font-size: 10px;
+      color: var(--ink-3); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 16px;
+    }
+    .proj-title {
+      font-family: var(--serif); font-size: clamp(44px, 5vw, 70px);
+      line-height: .96; letter-spacing: -.01em; margin-bottom: 18px;
+    }
+    .proj-title em { font-style: italic; color: var(--accent); }
+
+    .h-body { font-size: 13px; line-height: 1.8; color: var(--ink-2); max-width: 46ch; }
+    .h-num  {
+      font-family: var(--serif); font-size: 100px; line-height: 1;
+      color: var(--border); margin-top: 20px; letter-spacing: -.02em;
+    }
+
+    /* CENTER sketches */
+    .sketch-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em; margin-bottom: 10px;
+    }
+    .sketch-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .sketch-img { border-radius: 0; overflow: hidden; }
+    .sketch-img img { width: 100%; height: 114px; object-fit: cover; filter: grayscale(15%); }
+
+    .h-tagline { margin-top: 16px; }
+    .h-tagline strong { display: block; font-size: 13px; font-weight: 600;
+                        color: var(--ink-1); line-height: 1.45; margin-bottom: 5px; }
+    .h-tagline p { font-size: 12px; line-height: 1.7; color: var(--ink-2); }
+
+    /* RIGHT aerial */
+    .h-right { position: relative; }
+    .h-right::before {
+      content: ''; position: absolute;
+      top: -18px; right: -20px;
+      width: 54%; height: 50%;
+      background: var(--ink-1);
+      z-index: 0;
+    }
+    .aerial-wrap { position: relative; z-index: 1; }
+    .aerial-frame {
+      border: 1px solid var(--border); border-radius: 0;
+      overflow: hidden; background: var(--surface);
+    }
+    .aerial-cap {
+      padding: 7px 10px; background: var(--bg-2);
+      border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .1em;
+    }
+
+    /* divider line replacing the black bar */
+    .section-divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── SECTIONS ── */
+    .section { padding: 52px 0; }
+    .section + .section { border-top: 1px solid var(--border); }
+
+    .section-label {
+      font-family: var(--mono); font-size: 9px; font-weight: 500;
+      color: var(--ink-3); text-transform: uppercase; letter-spacing: .16em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .section-h { font-family: var(--serif); font-size: clamp(24px, 2.6vw, 34px);
+                 line-height: 1.1; margin-bottom: 12px; }
+    .section-h em { font-style: italic; color: var(--accent); }
+
+    .lead { font-size: 14px; line-height: 1.82; color: var(--ink-2); max-width: 58ch; margin-bottom: 24px; }
+    .lead strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── LAYOUTS ── */
+    .cols-5050 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+    .cols-6040 { display: grid; grid-template-columns: 3fr 2fr; gap: 40px; align-items: start; }
+    .cols-4060 { display: grid; grid-template-columns: 2fr 3fr; gap: 40px; align-items: start; }
+
+    /* ── FIGURES ── */
+    .fig {
+      border: 1px solid var(--border); border-radius: 0;
+      overflow: hidden; background: var(--surface); box-shadow: var(--sh);
+    }
+    .fig figcaption {
+      padding: 8px 14px; background: var(--bg-2); border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+    }
+    .fig-plan img { height: 320px; object-fit: cover; object-position: center; }
+
+    /* ── ZONE CARDS ── */
+    .zone-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0 0; }
+    .zone-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 0; padding: 16px 18px;
+    }
+    .zone-card .zn {
+      font-family: var(--mono); font-size: 9px; font-weight: 500;
+      color: var(--accent); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 5px;
+    }
+    .zone-card .zt { font-size: 13px; font-weight: 600; color: var(--ink-1); margin-bottom: 4px; }
+    .zone-card .zd { font-size: 12px; line-height: 1.65; color: var(--ink-2); }
+
+    /* ── KEY POINTS ── */
+    .kp { list-style: none; display: flex; flex-direction: column; gap: 9px; margin: 16px 0; }
+    .kp li { display: flex; gap: 10px; font-size: 13px; line-height: 1.7; color: var(--ink-2); }
+    .kp li::before { content: '→'; color: var(--accent); font-family: var(--mono);
+                     font-weight: 700; flex-shrink: 0; }
+    .kp strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── SECTION SEQUENCE (plan → section + perspectives) ── */
+    .seq-block { margin: 28px 0 0; }
+    .seq-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em;
+      padding: 7px 14px; background: var(--bg-2);
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 0;
+      display: inline-block;
+    }
+    .seq-img { border: 1px solid var(--border); border-radius: 0; overflow: hidden; }
+    .seq-img img { display: block; }
+    .seq-cap {
+      padding: 8px 14px; background: var(--bg-2); border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+    }
+
+    /* ── PERSPECTIVE PAIR ── */
+    .persp-pair {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 32px; margin: 20px 0 0; align-items: start;
+    }
+    .persp-col { position: relative; }
+    /* decorative color swatch behind each image */
+    .persp-col.human-col::before {
+      content: '';
+      position: absolute;
+      bottom: -12px; left: -12px;
+      width: 48%; height: 48%;
+      background: var(--ink-1);
+      border-radius: 0;
+      z-index: 0;
+    }
+    .persp-col.seal-col::before {
+      content: '';
+      position: absolute;
+      top: -12px; right: -12px;
+      width: 44%; height: 42%;
+      background: rgba(234,99,27,.18);   /* orange tint */
+      border-radius: 0;
+      z-index: 0;
+    }
+    .persp-inner { position: relative; z-index: 1; }
+    .persp-header {
+      font-family: var(--mono); font-size: 9px; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .12em;
+      margin-bottom: 8px;
+    }
+    .persp-fig {
+      border: 1px solid var(--border); border-radius: 0;
+      overflow: hidden; background: var(--surface); box-shadow: var(--sh);
+    }
+    .persp-fig img { width: 100%; height: auto; display: block; } /* full aspect, no crop */
+    .persp-cap {
+      padding: 7px 12px; background: var(--bg-2); border-top: 1px solid var(--border);
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+    }
+
+    /* ── MOVE LIST ── */
+    .move-list { display: flex; flex-direction: column; gap: 1px; }
+    .move-item {
+      display: flex; gap: 18px; align-items: flex-start;
+      padding: 15px 18px; background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .move-item:first-child { border-radius: 0; }
+    .move-item:last-child  { border-radius: 0; }
+    .move-n {
+      font-family: var(--serif); font-size: 26px; line-height: 1;
+      color: var(--border); flex-shrink: 0; width: 30px; margin-top: 2px;
+    }
+    .move-t { font-size: 13px; font-weight: 600; color: var(--ink-1); margin-bottom: 3px; }
+    .move-d { font-size: 12px; line-height: 1.7; color: var(--ink-2); }
+    .move-d strong { color: var(--ink-1); font-weight: 600; }
+
+    /* ── CALLOUT (Steel Blue band) ── */
+    .callout-dark {
+      background: var(--ink-1); border-radius: 0; padding: 28px 36px; margin: 32px 0 0;
+      border: 1px solid rgba(168,194,224,.5);
+    }
+    .callout-dark .cl {
+      font-family: var(--mono); font-size: 9px; color: rgba(28,25,22,.45);
+      text-transform: uppercase; letter-spacing: .14em; margin-bottom: 8px;
+    }
+    .callout-dark p { font-size: 15px; line-height: 1.75; color: var(--ink-1); }
+    .callout-dark p strong { color: #C94D0A; font-weight: 700; }
+    .callout-dark p em { font-style: italic; color: var(--ink-2); }
+
+    /* ── CONCLUSION — Steel Blue band ── */
+    .conclusion { background: #D6E8F4; padding: 64px; }
+    .conclusion-inner {
+      max-width: 1160px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start;
+    }
+    .c-eyebrow { font-family: var(--mono); font-size: 9px; color: rgba(28,25,22,.4);
+                  text-transform: uppercase; letter-spacing: .14em; margin-bottom: 14px; }
+    .conclusion h2 { font-family: var(--serif); font-size: 32px; color: var(--ink-1); line-height: 1.1; margin-bottom: 16px; }
+    .conclusion h2 em { font-style: italic; color: #93C5FD; }
+    .conclusion p { font-size: 13px; line-height: 1.85; color: var(--ink-2); }
+    .conclusion p strong { color: var(--ink-1); font-weight: 600; }
+
+    .outcome-list { display: flex; flex-direction: column; gap: 1px; }
+    .oi { background: rgba(255,255,255,.42); border: 1px solid rgba(255,255,255,.65); padding: 14px 18px; backdrop-filter: blur(4px); }
+    .oi:first-child { border-radius: 0; }
+    .oi:last-child  { border-radius: 0; }
+    .oi .ot { font-size: 13px; font-weight: 600; color: var(--ink-1); margin-bottom: 3px; }
+    .oi .od { font-size: 12px; line-height: 1.6; color: var(--ink-2); }
+
+    /* ── PROJ NAV ── */
+    .proj-nav {
+      max-width: 1160px; margin: 0 auto; padding: 40px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid rgba(28,25,22,.12);
+      background: #D6E8F4;
+    }
+    .proj-nav a { text-decoration: none; display: flex; align-items: center; gap: 12px; }
+    .pn-dir   { font-family: var(--mono); font-size: 9px; color: rgba(28,25,22,.4);
+                text-transform: uppercase; letter-spacing: .12em; display: block; margin-bottom: 3px; }
+    .pn-title { font-size: 14px; font-weight: 600; color: var(--ink-1); }
+    .proj-nav a:hover .pn-title { color: #C94D0A; }
+    .nav-icon { color: rgba(28,25,22,.3); transition: color .15s; }
+    .proj-nav a:hover .nav-icon { color: #C94D0A; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .page { padding: 0 32px; }
+      .header-grid { grid-template-columns: 1fr; padding-top: 96px; gap: 24px; }
+      .h-right::before { display: none; }
+      .h-num { font-size: 72px; }
+      .cols-5050, .cols-6040, .cols-4060, .conclusion-inner { grid-template-columns: 1fr; }
+      .conclusion { padding: 40px 32px; }
+      .zone-pair, .persp-pair { grid-template-columns: 1fr; }
+      .proj-nav { padding: 36px 32px; flex-direction: column; gap: 20px; align-items: flex-start; }
+    }
+    @media (max-width: 560px) {
+      .sketch-pair { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">YW</a>
+  <a href="hci.html" class="pill">
+    <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    Prev
+  </a>
+  <a href="index.html#work" class="pill">All Projects</a>
+  <a href="cartabio.html" class="pill">Next →</a>
+</nav>
+
+<!-- ═══ HEADER ═══ -->
+<div class="page">
+  <header class="header-grid">
+
+    <!-- LEFT -->
+    <div>
+      <div class="proj-eyebrow">03 · Design Solutions</div>
+      <h1 class="proj-title">Berkeley<br><em>Rock &amp; Roar</em></h1>
+      <p class="h-body">
+        Translating abstract site analysis into concrete spatial decisions — circulation, program, and material — under real-world ecological constraints. Developed in the Landscape Architecture studio during my exchange semester at UC Berkeley.
+      </p>
+      <div class="h-num">03.</div>
+    </div>
+
+    <!-- CENTER — sketches -->
+    <div>
+      <div class="sketch-label">Framing the Design Idea</div>
+      <div class="sketch-pair">
+        <div class="sketch-img">
+          <img src="assets/slide9_Picture 17.jpg" alt="Conceptual sketch — site section" />
+        </div>
+        <div class="sketch-img">
+          <img src="assets/slide9_Picture 19.jpg" alt="Conceptual sketch — bubble diagram" />
+        </div>
+      </div>
+      <div class="h-tagline">
+        <strong>Seasonal seal presence creates a recurring human–wildlife conflict.</strong>
+        <p>The design mediates it through spatial organization — discouraging intrusion while preserving openness and coexistence.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT — aerial -->
+    <div class="h-right">
+      <div class="aerial-wrap">
+        <div class="aerial-frame">
+          <img src="assets/slide9_Picture 23.png" alt="Aerial — Caesar Chavez Park, NE tip marked" />
+        </div>
+        <div class="aerial-cap">Caesar Chavez Park &nbsp;·&nbsp; Design site (NE tip)</div>
+      </div>
+    </div>
+
+  </header>
+</div>
+
+<hr class="section-divider" />
+
+<!-- ═══ CONTENT ═══ -->
+<div class="page">
+
+  <!-- A. Design Problem -->
+  <section class="section">
+    <div class="section-label">A &nbsp; The Design Problem</div>
+
+    <div class="cols-6040">
+      <div>
+        <h2 class="section-h">A recurring <em>human–wildlife conflict</em></h2>
+        <p class="lead">
+          Harbor seals use the northeastern shoreline as a haul-out zone during pupping season. The standard response — temporary fencing — is disruptive and ecologically incomplete. The goal: a <strong>permanent solution that holds both uses simultaneously</strong>.
+        </p>
+        <div class="zone-pair">
+          <div class="zone-card">
+            <div class="zn">Zone A — Human</div>
+            <div class="zt">Observation &amp; Gathering</div>
+            <div class="zd">Seating terraces and framed viewpoints — close enough to see, far enough not to disturb</div>
+          </div>
+          <div class="zone-card">
+            <div class="zn">Zone B — Wildlife</div>
+            <div class="zt">Seal Haul-Out</div>
+            <div class="zd">Rocky shoreline kept undisturbed; structures are removable for pupping season</div>
+          </div>
+        </div>
+      </div>
+
+      <figure class="fig fig-plan">
+        <img src="assets/slide10_Picture 3.png" alt="Site plan — spatial organization, sightline arrow indicates sectional cut" />
+        <figcaption>Site Plan (1/2" = 3') — sightline arrow → sectional cut below</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- B. Sectional Strategy -->
+  <section class="section">
+    <div class="section-label">B &nbsp; Sectional Strategy</div>
+
+    <div class="cols-6040" style="margin-bottom:28px;">
+      <div>
+        <h2 class="section-h">The <em>17-foot gradient</em></h2>
+        <p class="lead">
+          The site drops 17 feet from inland path to waterline. <strong>Upper elevation = human zone; lower = seal territory.</strong> The stepped stone structure becomes a threshold: an invitation to look, not to descend.
+        </p>
+        <ul class="kp">
+          <li><strong>Permanent stone terracing</strong> — haul-out surface below, viewing steps above</li>
+          <li><strong>Portable wooden platform</strong> — present off-season, removed during pupping</li>
+          <li><em>Cladophora glomerata</em> (water-cleaning algae) integrated into stone surface</li>
+        </ul>
+      </div>
+      <figure class="fig">
+        <img src="assets/slide10_Picture 4.png" alt="Cross-section: 18 ft inland drops to 1 ft at waterline" />
+        <figcaption>Elevation section — 18 ft → 1 ft at waterline</figcaption>
+      </figure>
+    </div>
+
+    <!-- Sectional illustration -->
+    <div class="seq-block">
+      <div class="seq-label">Section along sightline</div>
+      <div class="seq-img">
+        <img src="assets/sectional_strategy_HQ.jpg" alt="Sectional illustration — left: human observation zone; right: seal haul-out structure" />
+        <div class="seq-cap">Left: human zone &nbsp;&middot;&nbsp; Right: seal habitat zone</div>
+      </div>
+    </div>
+
+    <!-- Perspective pair — anchored under each half -->
+    <div class="persp-pair">
+      <div class="persp-col human-col">
+        <div class="persp-inner">
+          <div class="persp-header">↑ Human Zone — perspective view</div>
+          <div class="persp-fig">
+            <img src="assets/slide10_Picture 6.png" alt="Watercolor perspective — curved path and terraced seating, human observation zone" />
+            <div class="persp-cap">Human observation zone — terraced path &amp; seating</div>
+          </div>
+        </div>
+      </div>
+      <div class="persp-col seal-col">
+        <div class="persp-inner">
+          <div class="persp-header">↑ Seal Habitat Zone — perspective view</div>
+          <div class="persp-fig">
+            <img src="assets/slide10_Picture 7.png" alt="Rendered perspective — seals resting on steel frame at waterline" />
+            <div class="persp-cap">Seal haul-out structure — steel frame at waterline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- C. Design Moves -->
+  <section class="section">
+    <div class="section-label">C &nbsp; Design Moves</div>
+
+    <div class="cols-4060" style="align-items:start;">
+      <div>
+        <h2 class="section-h">Four moves,<br><em>one logic</em></h2>
+        <p class="lead">Each decision serves the human experience and the ecological objective simultaneously.</p>
+      </div>
+      <div class="move-list">
+        <div class="move-item">
+          <div class="move-n">1</div>
+          <div>
+            <div class="move-t">Mediated Visual Access</div>
+            <div class="move-d">Sightlines to the haul-out zone are <strong>framed, not fenced</strong> — intimate without intrusion.</div>
+          </div>
+        </div>
+        <div class="move-item">
+          <div class="move-n">2</div>
+          <div>
+            <div class="move-t">Circulation as Nudge</div>
+            <div class="move-d">Curved path system steers visitors toward <strong>observation nodes</strong>, away from sensitive edges.</div>
+          </div>
+        </div>
+        <div class="move-item">
+          <div class="move-n">3</div>
+          <div>
+            <div class="move-t">Elevation as Permission</div>
+            <div class="move-d">Stepped massing encodes hierarchy: <strong>upper = human, lower = wildlife</strong>.</div>
+          </div>
+        </div>
+        <div class="move-item">
+          <div class="move-n">4</div>
+          <div>
+            <div class="move-t">Temporal Switching</div>
+            <div class="move-d">The <strong>removable platform</strong> converts the same footprint between two programs across seasons.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-dark">
+      <div class="cl">Design Principle</div>
+      <p>Not choosing between access and protection — designing a space that holds both, using <strong>spatial gradient, material transition, and temporal scheduling</strong> as instruments of mediation.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══ CONCLUSION ═══ -->
+<div class="conclusion">
+  <div class="conclusion-inner">
+    <div>
+      <div class="c-eyebrow">Project Outcome</div>
+      <h2>Insight into<br><em>spatial form</em></h2>
+      <p>
+        Berkeley Rock &amp; Roar is the "Design" phase of the problem-solving cycle —
+        <strong>translating system insight into spatial decisions</strong> that hold under real-world constraints. The physical arrangement of paths, materials, and elevations produces behavior <strong>without instruction</strong>.
+      </p>
+    </div>
+    <div class="outcome-list">
+      <div class="oi">
+        <div class="ot">Spatial gradient encodes permission</div>
+        <div class="od">Elevation creates implicit boundaries without barriers</div>
+      </div>
+      <div class="oi">
+        <div class="ot">Material mediates behavior</div>
+        <div class="od">Path → stone terrace → rocky shore signals decreasing human presence</div>
+      </div>
+      <div class="oi">
+        <div class="ot">Temporal design extends function</div>
+        <div class="od">Same footprint serves two programs across seasons</div>
+      </div>
+      <div class="oi">
+        <div class="ot">Ecology embedded in material</div>
+        <div class="od">Water-cleaning algae in stone — ecological function made structural</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT NAV -->
+<div class="proj-nav">
+  <a href="hci.html">
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    <div>
+      <span class="pn-dir">Previous</span>
+      <span class="pn-title">Healthy HCI — VR Ergonomics</span>
+    </div>
+  </a>
+  <a href="cartabio.html">
+    <div style="text-align:right">
+      <span class="pn-dir">Next Project</span>
+      <span class="pn-title">CartaBio — Immune Database</span>
+    </div>
+    <svg class="nav-icon" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+  </a>
+</div>
+
+</body>
+</html>

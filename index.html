@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yilin Wang — Product Manager Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #F5F2ED;
+      --bg-2:    #EDE8E1;
+      --border:  #C8C0B4;
+      --ink-1:   #1A1814;
+      --ink-2:   #48403A;
+      --ink-3:   #8A8278;
+      --serif:  'DM Serif Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+
+      /* Project signature colors */
+      --c-lyft:      #C4156A;
+      --c-hci:       #D4621A;
+      --c-berkeley:  #2B6CB0;
+      --c-cartabio:  #3B5EA6;
+      --c-sensetime: #1B4D3E;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { background: transparent; color: inherit; text-decoration: none; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    img  { display: block; max-width: 100%; height: auto; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.06); white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; color: var(--ink-2); text-decoration: none;
+                  padding: 5px 14px; transition: background .15s; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 1100px; margin: 0 auto; padding: 0 64px;
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding-top: 120px; padding-bottom: 80px;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .18em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 32px;
+    }
+    .hero-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(60px, 9vw, 128px);
+      line-height: .92; letter-spacing: -.02em;
+      color: var(--ink-1); margin-bottom: 28px;
+    }
+    .hero-name em { font-style: italic; color: var(--ink-3); }
+
+    .hero-bottom {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+      align-items: end; border-top: 1px solid var(--border); padding-top: 28px;
+    }
+    .hero-statement {
+      font-size: 15px; line-height: 1.85; color: var(--ink-2); max-width: 52ch;
+    }
+    .hero-statement strong { color: var(--ink-1); font-weight: 600; }
+
+    .hero-meta { display: flex; flex-direction: column; gap: 0; }
+    .hm-row { padding: 11px 0; border-top: 1px solid var(--border);
+              display: grid; grid-template-columns: 110px 1fr; gap: 12px; align-items: baseline; }
+    .hm-l { font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+             text-transform: uppercase; letter-spacing: .12em; }
+    .hm-v { font-size: 13px; color: var(--ink-1); line-height: 1.4; }
+
+    /* ── PROJECTS ── */
+    .projects {
+      max-width: 1100px; margin: 0 auto; padding: 0 64px 120px;
+    }
+    .proj-label {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .18em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 0;
+    }
+    .proj-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Project rows */
+    .proj-row {
+      display: grid; grid-template-columns: 64px 1fr auto;
+      align-items: baseline; gap: 24px;
+      padding: 22px 0; border-bottom: 1px solid var(--border);
+      text-decoration: none; color: inherit;
+      transition: background .12s;
+      position: relative;
+    }
+    .proj-row:first-of-type { border-top: 1px solid var(--border); }
+    .proj-row:hover { background: var(--bg-2); margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
+
+    .pr-num { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: .08em; }
+    .pr-body { display: flex; flex-direction: column; gap: 3px; }
+    .pr-title { font-size: 17px; font-weight: 600; color: var(--ink-1); }
+    .pr-sub { font-size: 13px; color: var(--ink-2); }
+    .pr-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .pr-phase {
+      font-family: var(--mono); font-size: 9px; text-transform: uppercase;
+      letter-spacing: .12em; padding: 3px 10px; border: 1px solid var(--border);
+      color: var(--ink-3);
+    }
+    .pr-arrow {
+      font-size: 18px; color: var(--ink-3); opacity: 0;
+      transition: opacity .15s, transform .15s;
+    }
+    .proj-row:hover .pr-arrow { opacity: 1; transform: translateX(4px); }
+    .proj-row:hover .pr-phase { border-color: currentColor; }
+
+    /* Accent colors per project */
+    .proj-row.p-lyft:hover .pr-title      { color: var(--c-lyft); }
+    .proj-row.p-lyft:hover .pr-phase      { color: var(--c-lyft); }
+    .proj-row.p-lyft:hover .pr-arrow      { color: var(--c-lyft); }
+
+    .proj-row.p-hci:hover .pr-title       { color: var(--c-hci); }
+    .proj-row.p-hci:hover .pr-phase       { color: var(--c-hci); }
+    .proj-row.p-hci:hover .pr-arrow       { color: var(--c-hci); }
+
+    .proj-row.p-berkeley:hover .pr-title  { color: var(--c-berkeley); }
+    .proj-row.p-berkeley:hover .pr-phase  { color: var(--c-berkeley); }
+    .proj-row.p-berkeley:hover .pr-arrow  { color: var(--c-berkeley); }
+
+    .proj-row.p-cartabio:hover .pr-title  { color: var(--c-cartabio); }
+    .proj-row.p-cartabio:hover .pr-phase  { color: var(--c-cartabio); }
+    .proj-row.p-cartabio:hover .pr-arrow  { color: var(--c-cartabio); }
+
+    .proj-row.p-sensetime:hover .pr-title { color: var(--c-sensetime); }
+    .proj-row.p-sensetime:hover .pr-phase { color: var(--c-sensetime); }
+    .proj-row.p-sensetime:hover .pr-arrow { color: var(--c-sensetime); }
+
+    /* ── STAT BAND ── */
+    .stat-band {
+      background: var(--ink-1); padding: 56px 64px;
+    }
+    .stat-band-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border-left: 1px solid rgba(255,255,255,.1);
+    }
+    .sb-item {
+      padding: 0 40px; border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .sb-n { font-family: var(--serif); font-size: 52px; line-height: 1;
+            color: #fff; margin-bottom: 6px; }
+    .sb-n em { font-style: normal; }
+    .sb-l { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.35);
+             text-transform: uppercase; letter-spacing: .12em; margin-bottom: 4px; }
+    .sb-d { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.55; }
+
+    /* ── FOOTER ── */
+    .footer {
+      max-width: 1100px; margin: 0 auto; padding: 40px 64px;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    .footer-l { font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+                text-transform: uppercase; letter-spacing: .14em; }
+    .footer-r { font-size: 13px; color: var(--ink-2); }
+    .footer-r a { color: var(--ink-1); border-bottom: 1px solid var(--border);
+                  padding-bottom: 1px; transition: border-color .15s; }
+    .footer-r a:hover { border-color: var(--ink-1); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      .hero, .projects { padding-left: 28px; padding-right: 28px; }
+      .hero-bottom { grid-template-columns: 1fr; gap: 24px; }
+      .proj-row { grid-template-columns: 40px 1fr auto; }
+      .stat-band { padding: 40px 28px; }
+      .stat-band-inner { grid-template-columns: 1fr; border-left: none; }
+      .sb-item { padding: 20px 0; border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); }
+      .footer { padding: 28px; flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">YW</a>
+  <a href="#work" class="pill">Work</a>
+  <a href="contact.html" class="pill">Contact</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero" id="home">
+  <div class="hero-eyebrow">Portfolio 2026 · Product Manager</div>
+  <h1 class="hero-name">Yilin<br><em>Wang</em></h1>
+  <div class="hero-bottom">
+    <p class="hero-statement">
+      I turn <strong>messy data into sharp product decisions</strong>.
+      With a statistics background, I move from insight to experiment to build —
+      connecting research, analysis, and cross-functional execution to drive
+      <strong>measurable outcomes</strong>.
+    </p>
+    <div class="hero-meta">
+      <div class="hm-row">
+        <div class="hm-l">Education</div>
+        <div class="hm-v">B.S. Statistics · CUHK Shenzhen</div>
+      </div>
+      <div class="hm-row">
+        <div class="hm-l">Focus</div>
+        <div class="hm-v">AI &amp; Machine Learning · Product · Data Science</div>
+      </div>
+      <div class="hm-row">
+        <div class="hm-l">Experience</div>
+        <div class="hm-v">CartaBio · SenseTime · HKUST HCI Lab</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PROJECTS ═══ -->
+<div class="projects" id="work">
+  <div class="proj-label" style="margin-bottom:0;">Selected Work — Five projects, one framework</div>
+
+  <a class="proj-row p-lyft" href="lyft.html">
+    <div class="pr-num">01</div>
+    <div class="pr-body">
+      <div class="pr-title">Lyft Traffic Analysis</div>
+      <div class="pr-sub">Supply-demand mismatch · NYC market · Data modeling</div>
+    </div>
+    <div class="pr-right">
+      <div class="pr-phase">Insight</div>
+      <div class="pr-arrow">→</div>
+    </div>
+  </a>
+
+  <a class="proj-row p-hci" href="hci.html">
+    <div class="pr-num">02</div>
+    <div class="pr-body">
+      <div class="pr-title">Healthy HCI · VR Ergonomics</div>
+      <div class="pr-sub">User research · Interaction patterns · Academic study</div>
+    </div>
+    <div class="pr-right">
+      <div class="pr-phase">Experiment</div>
+      <div class="pr-arrow">→</div>
+    </div>
+  </a>
+
+  <a class="proj-row p-berkeley" href="berkeley.html">
+    <div class="pr-num">03</div>
+    <div class="pr-body">
+      <div class="pr-title">Berkeley Rock &amp; Roar</div>
+      <div class="pr-sub">Sustainable design · Visualization &amp; creativity</div>
+    </div>
+    <div class="pr-right">
+      <div class="pr-phase">Design</div>
+      <div class="pr-arrow">→</div>
+    </div>
+  </a>
+
+  <a class="proj-row p-cartabio" href="cartabio.html">
+    <div class="pr-num">04</div>
+    <div class="pr-body">
+      <div class="pr-title">CartaBio · Immune Database</div>
+      <div class="pr-sub">AWS data pipeline · 600k cells · System implementation</div>
+    </div>
+    <div class="pr-right">
+      <div class="pr-phase">Build</div>
+      <div class="pr-arrow">→</div>
+    </div>
+  </a>
+
+  <a class="proj-row p-sensetime" href="sensetime.html">
+    <div class="pr-num">05</div>
+    <div class="pr-body">
+      <div class="pr-title">SenseTime AI Chatbox</div>
+      <div class="pr-sub">A/B testing · Progressive disclosure · +32% retention</div>
+    </div>
+    <div class="pr-right">
+      <div class="pr-phase">Validate</div>
+      <div class="pr-arrow">→</div>
+    </div>
+  </a>
+</div>
+
+<!-- ═══ STAT BAND ═══ -->
+<div class="stat-band">
+  <div class="stat-band-inner">
+    <div class="sb-item">
+      <div class="sb-l">SenseTime · A/B Testing</div>
+      <div class="sb-n" style="color:#A8D5B5;">+32%</div>
+      <div class="sb-d">First-step retention from progressive disclosure — proposed, designed, validated</div>
+    </div>
+    <div class="sb-item">
+      <div class="sb-l">CartaBio · Data Pipeline</div>
+      <div class="sb-n" style="color:#93B4E0;">600k</div>
+      <div class="sb-d">scRNA-seq records integrated · data integrity 80% → 94%</div>
+    </div>
+    <div class="sb-item">
+      <div class="sb-l">Lyft · Market Analysis</div>
+      <div class="sb-n" style="color:#F9A8D4;">~23%</div>
+      <div class="sb-d">Market share at peak hours — structural supply-demand mismatch identified</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-l">Yilin Wang · Portfolio 2026</div>
+  <div class="footer-r">
+    <a href="mailto:ellenyilin123@gmail.com">ellenyilin123@gmail.com</a>
+  </div>
+</footer>
+
+</body>
+</html>

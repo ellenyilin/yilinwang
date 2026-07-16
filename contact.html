@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Yilin Wang</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:      #F5F2ED;
+      --bg-2:    #EDE8E1;
+      --border:  #C8C0B4;
+      --ink-1:   #1E1B18;
+      --ink-2:   #48403A;
+      --ink-3:   #8A8278;
+      --serif:  'DM Serif Display', Georgia, serif;
+      --sans:   'Inter', system-ui, sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    a { background: transparent; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink-1);
+           font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; align-items: center; gap: 2px;
+      background: rgba(245,242,237,.95); backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      padding: 6px 8px 6px 20px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.06); white-space: nowrap;
+    }
+    .nav-logo { font-family: var(--mono); font-size: 12px; font-weight: 500;
+                color: var(--ink-1); text-decoration: none; margin-right: 16px; }
+    .nav a.pill { font-size: 13px; color: var(--ink-2); text-decoration: none;
+                  padding: 5px 14px; transition: background .15s; }
+    .nav a.pill:hover { background: var(--bg-2); color: var(--ink-1); }
+
+    /* ── PAGE ── */
+    .wrap {
+      max-width: 640px; margin: 0 auto; padding: 0 40px;
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; padding-top: 120px; padding-bottom: 80px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .18em;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 28px;
+    }
+    .eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(48px, 8vw, 80px);
+      line-height: .94; letter-spacing: -.02em;
+      color: var(--ink-1); margin-bottom: 40px;
+    }
+    h1 em { font-style: italic; color: var(--ink-3); }
+
+    .contact-list { border-top: 1px solid var(--border); }
+
+    .ci {
+      display: grid; grid-template-columns: 100px 1fr;
+      align-items: baseline; gap: 16px;
+      padding: 20px 0; border-bottom: 1px solid var(--border);
+    }
+    .ci-l {
+      font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+      text-transform: uppercase; letter-spacing: .14em;
+    }
+    .ci-v { font-size: 15px; color: var(--ink-1); }
+    .ci-v a {
+      color: var(--ink-1); text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1px; transition: border-color .15s, color .15s;
+    }
+    .ci-v a:hover { border-color: var(--ink-1); }
+
+    .back {
+      margin-top: 40px;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 10px; color: var(--ink-3);
+      text-decoration: none; text-transform: uppercase; letter-spacing: .12em;
+      transition: color .15s;
+    }
+    .back:hover { color: var(--ink-1); }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">YW</a>
+  <a href="index.html#work" class="pill">Work</a>
+  <a href="contact.html" class="pill" style="color:var(--ink-1);font-weight:500;">Contact</a>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">Get in touch</div>
+  <h1>Say<br><em>hello.</em></h1>
+
+  <div class="contact-list">
+    <div class="ci">
+      <div class="ci-l">Email</div>
+      <div class="ci-v">
+        <a href="mailto:ellenyilin123@gmail.com">ellenyilin123@gmail.com</a>
+      </div>
+    </div>
+    <div class="ci">
+      <div class="ci-l">Phone</div>
+      <div class="ci-v">
+        <a href="tel:+8613603027936">+86 136 0302 7936</a>
+      </div>
+    </div>
+    <div class="ci">
+      <div class="ci-l">LinkedIn</div>
+      <div class="ci-v">
+        <a href="https://www.linkedin.com/in/%E8%89%BA%E9%9C%96-%E7%8E%8B-47a311299/" target="_blank" rel="noopener">linkedin.com/in/艺霖-王</a>
+      </div>
+    </div>
+  </div>
+
+  <a href="index.html" class="back">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+    Back to work
+  </a>
+</div>
+
+</body>
+</html>
